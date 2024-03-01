@@ -5,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+st.set_option('deprecation.showPyplotGlobalUse', False)
+
 
 def change_variable_types(df):
     column_name = st.selectbox("Selectionner votre variable : ", options=df.columns.to_list())
@@ -21,7 +23,6 @@ def delete_columns(df):
     if st.button("Supprimer"):
         for column_name in columns_name:
             df.drop(column_name, axis=1, inplace=True)
-            columns_to_delete.remove(column_name)
         st.success('Colonnes supprimées ')
         st.dataframe(df)
     return df
