@@ -77,9 +77,24 @@ def regression_ridge(df: pd.DataFrame, X, y, train_size=0.2):
     st.write(df_resultat_ridge)
     # trie pour le meilleur scoreMSE afin de recuperer l'alpha correspondant
     st.write("Meilleur score MSE :")
-    st.write(df_resultat_ridge.groupby("alpha")['mse'].mean().sort_values())
+    alphas_used = df_resultat_ridge.groupby("alpha")['mse'].mean()
+    st.write(alphas_used)
+
+    alphas_used = alphas_used.reset_index()
+
+    st.subheader("Evolution de l'erreur quadratique par rapport au paramètre alpha")
+    plt.plot(alphas_used['alpha'], alphas_used['mse'])
+    plt.xlabel('Alpha')
+    plt.ylabel('MSE')
+    plt.title('MSE en fonction de alpha')
+    st.pyplot()
+    alphas_used = alphas_used.sort_values(by='mse')
+    best_alpha = alphas_used['alpha'].iloc[0]
+    st.success(f"Meilleur paramètre alpha pour le modèle :  {best_alpha}")
     # affichage des coefficient
     st.line_chart(df_resultat_ridge.set_index('alpha')[['coefficient']])
+
+    model = Ridge(alpha=best_alpha)
     return model
 
 
@@ -101,13 +116,19 @@ def regressionlasso(df: pd.DataFrame, X, y,train_size=0.2):
     df_resultat_lasso = pd.concat(df_resultat_lasso)
     st.write("Résultats de la régression Lasso ")
     st.dataframe(df_resultat_lasso)
-    best_alpha = df_resultat_lasso.groupby("alpha")['mse'].mean().sort_values()
-    st.write(best_alpha)
+    alphas_used = df_resultat_lasso.groupby("alpha")['mse'].mean()
+    alphas_used = alphas_used.reset_index()
 
-    # VAR = "INDUS"
-    # plt.plot(df_resultat_lasso[df_resultat_lasso.variable == VAR].alpha,
-    #          df_resultat_lasso[df_resultat_lasso.variable == VAR].coefficient)
-    # plt.title(f"Variable {VAR}")
-    # st.pyplot()
+    st.subheader("Evolution de l'erreur quadratique par rapport au paramètre alpha")
+    plt.plot(alphas_used['alpha'], alphas_used['mse'])
+    plt.xlabel('Alpha')
+    plt.ylabel('MSE')
+    plt.title('MSE en fonction de alpha')
+    st.pyplot()
+    alphas_used = alphas_used.sort_values(by='mse')
+    best_alpha = alphas_used['alpha'].iloc[0]
+    st.success(f"Meilleur paramètre alpha pour le modèle :  {best_alpha}")
+
+    model = Lasso(alpha=best_alpha)
     return model
     # st.line_chart(df_resultat_lasso.set_index('alpha')['coefficient'])

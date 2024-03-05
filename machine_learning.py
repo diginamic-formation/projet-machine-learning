@@ -28,13 +28,6 @@ def select_algo_model(algo_type):
     return model
 
 
-
-
-
-
-
-
-
 def is_standardized(X):
     return X.apply(lambda x: x.mean()).abs().lt(0.01).all() and X.apply(lambda x: x.std()).subtract(1).abs().lt(
         0.01).all()
@@ -54,7 +47,8 @@ def target_encoding(y):
     if not pd.api.types.is_numeric_dtype(y):
         label_encoder = LabelEncoder()
         y = label_encoder.fit_transform(y)
-        label_mapping_df = pd.DataFrame({'Category': label_encoder.classes_, 'Encoded': label_encoder.transform(label_encoder.classes_)})
+        label_mapping_df = pd.DataFrame(
+            {'Category': label_encoder.classes_, 'Encoded': label_encoder.transform(label_encoder.classes_)})
         st.subheader("Encodage de la Target")
         st.write(pd.DataFrame(label_mapping_df))
     return y
@@ -84,13 +78,13 @@ def select_target(df: pd.DataFrame):
 def run_machine_learning(df, ml_algo_type, ml_algo_model, X, y, FEATURES, TARGET):
     model = None
     if ml_algo_type == ML_ALGO_TYPES[0]:
+        train_size = st.slider("Taille du jeux de test", min_value=0.0, max_value=1.0, step=0.05, value=0.2)
         if ml_algo_model == REGRESSION_MODELS[0]:
-            train_size = st.slider("Taille du jeux de test", min_value=0.0, max_value=1.0, step=0.05,value=0.2)
-            model = regression_lineaire(df, X, y, train_size,FEATURES, TARGET )
+            model = regression_lineaire(df, X, y, train_size, FEATURES, TARGET)
         if ml_algo_model == REGRESSION_MODELS[1]:
-            model = regressionlasso(df, X, y)
+            model = regressionlasso(df, X, y, train_size)
         if ml_algo_model == REGRESSION_MODELS[2]:
-            model = regression_ridge(df, X, y)
+            model = regression_ridge(df, X, y, train_size)
 
     elif ml_algo_type == ML_ALGO_TYPES[1]:
         if ml_algo_model == CLASSIFICATION_MODELS[0]:
@@ -103,11 +97,13 @@ def run_machine_learning(df, ml_algo_type, ml_algo_model, X, y, FEATURES, TARGET
             model = k_neighbors_classifier(X, y)
 
     if model is not None:
-        validation_k_fold(X,y, FEATURES, model)
+        st.subheader("Validation")
+        validation_k_fold(X, y, FEATURES, model)
 
 
 def run(df):
     # choisir la target
+    st.subheader("Choix de la Target (variables expliquée")
     TARGET = select_target(df)
     y = df[TARGET]
 
@@ -118,6 +114,7 @@ def run(df):
     # Encodage de la target
     y = target_encoding(y)
 
+    st.subheader("Choix des Features (variables explicatives")
     # Choisir les Features
     FEATURES = select_features(df)
     X = df[FEATURES]
@@ -128,18 +125,18 @@ def run(df):
     # Standardisation
     # X = data_standardisation(X)
 
+    st.subheader("Selection de type d'algorithme (Regression / Classification)")
     # Choix du type
     ml_algo_type = select_algo_type()
 
+    st.subheader("Choix du modèle d'apprentissage")
     # Choix du modèle
     ml_algo_model = select_algo_model(ml_algo_type)
 
     st.dataframe(X)
+    st.subheader("Demarrage de l'apprentissage")
     if st.checkbox("Démarrer le process"):
         run_machine_learning(df, ml_algo_type, ml_algo_model, X, y, FEATURES, TARGET)
 
-    # Prediction
-
-    # Evaluation et validation
-
+    st.subheader("Validation")
     return df

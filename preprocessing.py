@@ -41,7 +41,6 @@ def get_list_strategy(df, column_to_treat):
 
 
 def missed_data_treatment(df):
-    st.write("Traitement des valeurs manquantes")
     # Effacefr les lignes
     columns_na = columns_with_missing_data(df)
     if columns_na is not None and len(columns_na) > 0:
@@ -57,16 +56,19 @@ def missed_data_treatment(df):
         elif fill_strategy == "effacer":
             if st.button("Effacer"):
                 df.dropna(subset=column_to_treat, inplace=True)
+                st.success("Remplacement terminé")
         else:
             if st.button(f"Fill Missing Values with {fill_strategy}"):
                 df[column_to_treat] = df[column_to_treat].fillna(
                     df[column_to_treat].mean() if fill_strategy == "mean" else df[column_to_treat].median())
+                st.success("Remplacement terminé")
         # Remplacer par une valeur choisie par le client
         # Remplacer par une valeur calculée (moyenne, mediane, valeurs voisines)
-        st.dataframe(df)
-        missing_data(df)
     else:
         st.write("Votre jeux de données est complet")
+    st.subheader("Visulisation du jeux de données nettoyé")
+    st.dataframe(df)
+    missing_data(df)
     return df
 
 
@@ -106,11 +108,18 @@ def plot_data(df):
 def run(df):
     if df is not None:
         # Changer les types de variables
+        st.subheader("Changement des types de variable")
         df = change_variable_types(df)
         # Supprimer les colonnes qu'il veut
+        st.subheader("Traitement des colonnes vides")
         df = delete_columns(df)
         # Traitement des valeurs manquantes
+        st.subheader("Traitement des valeurs manquantes")
         df = missed_data_treatment(df)
         # Affichage des graphiques
-        plot_data(df)
+
+        st.subheader("Matrice de corrélation")
+        plot_data(df.head())
+        st.subheader("Taille du jeux de données")
+        st.write(df.shape)
         return df
