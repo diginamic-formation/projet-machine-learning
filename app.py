@@ -1,4 +1,3 @@
-import machine_learning_classification
 import machine_learning
 import streamlit as st
 import data_management
@@ -24,6 +23,3 @@ elif page == pages[2]:
     if "result" in st.session_state:
         machine_learning.run(st.session_state["result"])
 
-elif page == pages[3]:
-    if "result" in st.session_state:
-        machine_learning_classification.run(st.session_state["result"])
