@@ -35,7 +35,8 @@ def data_standardisation(X):
     else:
         if st.checkbox("Standariser vos données"):
             scaler = StandardScaler()
-            X = scaler.fit_transform(X)
+            X_scaled = scaler.fit_transform(X)
+            X = pd.DataFrame(X_scaled, columns=X.columns)
     return X
 
 def target_encoding(y):
@@ -142,7 +143,7 @@ def run(df):
     X = feature_encoding(X)
 
     # Standardisation
-    # X = data_standardisation(X)
+    X = data_standardisation(X)
 
     st.subheader("Sélection du type d'algorithme (Regression / Classification)")
     # Choix du type

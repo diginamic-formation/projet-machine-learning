@@ -32,10 +32,12 @@ def validation_k_fold_classification(X, y, FEATURES, model):
     kf = KFold(n_splits=6, shuffle=True, random_state=2021)
     scores = {"accuracy": [], "precision": [], "recall": [], "f1": []}
     fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-
+    
+    X = pd.DataFrame(X, columns=FEATURES)
     for i, (train_index, test_index) in enumerate(kf.split(X)):
         ligne = i // 3
         colonne = i % 3
+    
         X_train, X_test = X.iloc[train_index], X.iloc[test_index]
         y_train, y_test = y[train_index], y[test_index]
         model.fit(X_train[FEATURES], y_train)
@@ -84,9 +86,11 @@ def validation_k_fold_regression(X, y, FEATURES, model):
     colonnes = 3
     fig, axes = plt.subplots(lignes, colonnes, figsize=(15, 10))
     
+
     for i, (train_index, test_index) in enumerate(kf.split(X)):
         ligne = i // colonnes
         colonne = i % colonnes
+        X = pd.DataFrame(X, columns=FEATURES)
         X_train, X_test = X.iloc[train_index], X.iloc[test_index]
         y_train, y_test = y[train_index], y[test_index]
         

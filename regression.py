@@ -50,7 +50,7 @@ def regression_lineaire(df, X, y, train_size, FEATURES, TARGET):
     # Entraînement du modèle de régression linéaire
     model = LinearRegression()
     model.fit(X_train, y_train)
-
+    X_test = pd.DataFrame(X_test, columns=FEATURES)
     # Prédiction sur l'ensemble de test
     y_pred = model.predict(X_test)
     results_df = pd.DataFrame()
@@ -118,6 +118,7 @@ def regression_ridge(df: pd.DataFrame, X, y, train_size=0.2):
         # A chaque itération, nous instancions notre modèle avec un nouvel alpha
         # Puis nous entraînons le modèle et l'évaluons
         model = Ridge(alpha=alpha).fit(X_train, y_train)
+        X_test = pd.DataFrame(X_test)
         y_pred = model.predict(X_test)
         mse = round(mean_squared_error(y_test.values, y_pred), 4)
 
@@ -192,8 +193,10 @@ def regressionlasso(df: pd.DataFrame, X, y, train_size=0.2):
     alphas = np.arange(0, n_alphas, step)
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size, random_state=42)
 
+    
     for alpha in alphas:
         model = Lasso(alpha=alpha).fit(X_train, y_train)
+        X_test = pd.DataFrame(X_test)
         y_pred = model.predict(X_test)
         mse = round(mean_squared_error(y_test.values, y_pred), 4)
         res = pd.DataFrame({"variable": X_test.columns, "coefficient": model.coef_})
@@ -242,9 +245,10 @@ def regression_elasticnet(df: pd.DataFrame, X, y, train_size=0.2):
     step = st.slider("Le pas de variation de alpha", min_value=0.01, max_value=0.2, step=0.01)
     alphas = np.arange(0, n_alphas, step)
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=train_size, random_state=42)
-
+    
     for alpha in alphas:
         model = ElasticNet(alpha=alpha, l1_ratio=l1_ratio).fit(X_train, y_train)
+        X_test = pd.DataFrame(X_test)
         y_pred = model.predict(X_test)
         mse = round(mean_squared_error(y_test.values, y_pred), 4)
         res = pd.DataFrame({"variable": X_test.columns, "coefficient": model.coef_})

@@ -86,6 +86,7 @@ def tree_classifier(X, y, valeur=0.2):
     # Affichage graphique de l'arbre de décision dans Streamlit
     st.subheader("Représentation Graphique de l'Arbre de Décision :")
     plt.figure(figsize=(15, 10))
+    X = pd.DataFrame(X)
     plot_tree(model, filled=True, feature_names=X.columns, class_names=[str(i) for i in model.classes_])
     st.pyplot()
 
